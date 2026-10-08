@@ -12,11 +12,19 @@ export async function POST(req: Request) {
     const rawUsername = (body.username || "").trim();
     const rawEmail = (body.email || "").trim().toLowerCase();
     const password = body.password || "";
+    const confirmPassword = body.confirmPassword;
     const rawName = (body.name || "").trim();
 
     if (!rawUsername || !rawEmail || !password) {
       return NextResponse.json(
         { error: "Username, email, and password are required." },
+        { status: 400 }
+      );
+    }
+
+    if (confirmPassword !== undefined && password !== confirmPassword) {
+      return NextResponse.json(
+        { error: "Passwords do not match." },
         { status: 400 }
       );
     }
@@ -52,13 +60,26 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check existing user by username or email
+    // Check existing user by email first
+    const existingByEmail = await db.user.findUnique({
+      where: { email: rawEmail },
+    });
+
+    if (existingByEmail && existingByEmail.password !== "") {
+      return NextResponse.json(
+        { error: "An account with this email already exists." },
+        { status: 409 }
+      );
+    }
+
+    // Check existing user by username (excluding the legacy account being claimed)
     const existingByUsername = await db.user.findFirst({
       where: {
         username: {
           equals: rawUsername,
           mode: "insensitive",
         },
+        ...(existingByEmail ? { NOT: { id: existingByEmail.id } } : {}),
       },
     });
 
@@ -69,28 +90,26 @@ export async function POST(req: Request) {
       );
     }
 
-    const existingByEmail = await db.user.findUnique({
-      where: { email: rawEmail },
-    });
-
-    if (existingByEmail) {
-      return NextResponse.json(
-        { error: "An account with this email already exists." },
-        { status: 409 }
-      );
-    }
-
     const passwordHash = hashPassword(password);
 
-    const newUser = await db.user.create({
-      data: {
-        username: rawUsername,
-        email: rawEmail,
-        password: passwordHash,
-        name: rawName || rawUsername,
-        ...INITIAL_USER_SEED,
-      },
-    });
+    const newUser = existingByEmail
+      ? await db.user.update({
+          where: { id: existingByEmail.id },
+          data: {
+            username: rawUsername,
+            password: passwordHash,
+            name: rawName || existingByEmail.name || rawUsername,
+          },
+        })
+      : await db.user.create({
+          data: {
+            username: rawUsername,
+            email: rawEmail,
+            password: passwordHash,
+            name: rawName || rawUsername,
+            ...INITIAL_USER_SEED,
+          },
+        });
 
     await setSessionCookie({
       id: newUser.id,
