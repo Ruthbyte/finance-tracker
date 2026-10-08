@@ -1,43 +1,202 @@
-import { SignUp } from "@clerk/nextjs";
-import { TrendingUp } from "lucide-react";
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  TrendingUp,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowRight,
+  AlertCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/lib/auth-context";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const { setUser } = useAuth();
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to create account.");
+        return;
+      }
+
+      setUser(data.user);
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Network error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center p-4 relative overflow-hidden transition-colors">
+      {/* Theme Toggle in top-right */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
+
       {/* Ambient background glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Brand Header */}
-      <Link href="/" className="flex items-center gap-3 mb-6 group">
-        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+      <Link href="/" className="flex items-center gap-3 mb-6 group relative z-10">
+        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white dark:text-slate-950 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
           <TrendingUp className="h-6 w-6 stroke-[2.5]" />
         </div>
-        <span className="text-2xl font-black tracking-tight text-white">
-          Finance<span className="text-emerald-400">Tracker</span>
+        <span className="text-2xl font-black tracking-tight text-foreground">
+          Finance
+          <span className="text-emerald-600 dark:text-emerald-400">Tracker</span>
         </span>
       </Link>
 
-      {/* Clerk Sign Up Box */}
-      <div className="w-full max-w-md flex justify-center">
-        <SignUp
-          appearance={{
-            elements: {
-              card: "bg-slate-900/90 border border-slate-800 backdrop-blur-xl shadow-2xl rounded-2xl",
-              headerTitle: "text-white text-xl font-bold",
-              headerSubtitle: "text-slate-400 text-sm",
-              socialButtonsBlockButton:
-                "bg-slate-950 border border-slate-800 text-slate-200 hover:bg-slate-800",
-              formButtonPrimary:
-                "bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold hover:opacity-90 transition-opacity",
-              formFieldLabel: "text-slate-300 text-xs font-semibold",
-              formFieldInput:
-                "bg-slate-950 border border-slate-800 text-white focus:border-emerald-500/50 rounded-xl",
-              footerActionLink: "text-emerald-400 font-semibold hover:underline",
-            },
-          }}
-        />
+      {/* Custom Sign Up Card */}
+      <div className="w-full max-w-md glass-card rounded-2xl p-6 sm:p-8 shadow-xl relative z-10">
+        <div className="text-center mb-6">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+            Create Your Account
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Sign up with your username, email, and password
+          </p>
+        </div>
+
+        {error && (
+          <div className="mb-5 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="username">Username</Label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="username"
+                type="text"
+                placeholder="e.g. hasan"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="pl-10"
+                autoComplete="username"
+                minLength={3}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email Address</Label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
+                autoComplete="email"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-3.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="At least 6 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-10"
+                autoComplete="new-password"
+                minLength={6}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            variant="gradient"
+            className="w-full h-11 font-bold gap-2 mt-2"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Creating Account...
+              </>
+            ) : (
+              <>
+                Create Account <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </form>
+
+        <div className="mt-6 pt-5 border-t border-border text-center text-xs text-muted-foreground">
+          Already have an account?{" "}
+          <Link
+            href="/sign-in"
+            className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
+          >
+            Sign in
+          </Link>
+        </div>
       </div>
     </div>
   );

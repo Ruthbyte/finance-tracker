@@ -1,37 +1,12 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const clerkUser = await currentUser();
-    if (!clerkUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const primaryEmail =
-      clerkUser.emailAddresses.find(
-        (e) => e.id === clerkUser.primaryEmailAddressId
-      )?.emailAddress || clerkUser.emailAddresses[0]?.emailAddress || "";
-
-    let dbUser = await db.user.findUnique({
-      where: { clerkUserId: clerkUser.id },
-    });
-
-    if (!dbUser && primaryEmail) {
-      const existingUserByEmail = await db.user.findUnique({
-        where: { email: primaryEmail },
-      });
-      if (existingUserByEmail) {
-        dbUser = await db.user.update({
-          where: { id: existingUserByEmail.id },
-          data: { clerkUserId: clerkUser.id },
-        });
-      }
-    }
-
+    const dbUser = await getCurrentUser();
     if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { action, payload } = await req.json();

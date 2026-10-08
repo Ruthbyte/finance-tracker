@@ -149,7 +149,7 @@ export function AnalyticsTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-extrabold text-emerald-400">
+            <div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
               {transactions.length === 0 && accounts.length === 0
                 ? "N/A"
                 : `${healthScore} / 100`}
@@ -183,7 +183,7 @@ export function AnalyticsTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-extrabold text-teal-400">
+            <div className="text-3xl font-extrabold text-teal-600 dark:text-teal-400">
               {emergencyFundMonths} Months
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -199,7 +199,7 @@ export function AnalyticsTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-extrabold text-cyan-400">
+            <div className="text-3xl font-extrabold text-cyan-600 dark:text-cyan-400">
               {dtiRatio}%
             </div>
             <p className="text-xs text-muted-foreground mt-1">Liabilities vs income</p>
@@ -347,10 +347,10 @@ export function AnalyticsTab() {
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#0f172a",
-                      borderColor: "#334155",
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
                       borderRadius: "10px",
-                      color: "#f8fafc",
+                      color: "var(--foreground)",
                     }}
                   />
                   <Bar dataKey="value" fill="#3b82f6" radius={[0, 6, 6, 0]} />

@@ -9,17 +9,18 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-emerald-500 text-slate-950 font-semibold hover:bg-emerald-400 shadow-lg shadow-emerald-500/20",
+          "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 font-semibold hover:bg-emerald-500 dark:hover:bg-emerald-400 shadow-md shadow-emerald-500/20",
         destructive:
           "bg-rose-600 text-white hover:bg-rose-500 shadow-md shadow-rose-600/20",
         outline:
           "border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white",
         secondary:
           "bg-slate-100 dark:bg-zinc-800/80 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-zinc-700 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-zinc-700/50",
-        ghost: "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white",
-        link: "text-emerald-500 dark:text-emerald-400 underline-offset-4 hover:underline",
+        ghost:
+          "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white",
+        link: "text-emerald-600 dark:text-emerald-400 underline-offset-4 hover:underline",
         gradient:
-          "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold hover:from-emerald-400 hover:to-teal-400 shadow-lg shadow-emerald-500/25",
+          "bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-500 dark:to-teal-500 text-white dark:text-slate-950 font-bold hover:from-emerald-500 hover:to-teal-500 dark:hover:from-emerald-400 dark:hover:to-teal-400 shadow-md shadow-emerald-500/20",
       },
       size: {
         default: "h-10 px-4 py-2",

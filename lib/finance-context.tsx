@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "./auth-context";
 import {
   AccountItem,
   CategoryItem,
@@ -9,7 +9,7 @@ import {
   BudgetItem,
   GoalItem,
 } from "./mock-data";
-import { Database, AlertTriangle, RefreshCw } from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FinanceContextType {
@@ -89,7 +89,7 @@ const DEFAULT_FINANCE_CONTEXT: FinanceContextType = {
 const FinanceContext = createContext<FinanceContextType>(DEFAULT_FINANCE_CONTEXT);
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded } = useAuth();
 
   const [accounts, setAccounts] = useState<AccountItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
@@ -233,16 +233,16 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   // If database fails, render Database Error screen
   if (dbError) {
     return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
         <div className="max-w-md w-full glass-card p-8 rounded-2xl border border-rose-500/30 text-center space-y-4">
-          <div className="h-14 w-14 rounded-2xl bg-rose-500/20 text-rose-500 flex items-center justify-center mx-auto border border-rose-500/30">
+          <div className="h-14 w-14 rounded-2xl bg-rose-500/15 text-rose-600 dark:text-rose-500 flex items-center justify-center mx-auto border border-rose-500/30">
             <AlertTriangle className="h-7 w-7" />
           </div>
-          <h2 className="text-xl font-bold text-slate-100">PostgreSQL Connection Error</h2>
-          <p className="text-sm text-rose-300 bg-rose-950/50 p-3 rounded-xl border border-rose-900/50 font-mono text-left overflow-auto">
+          <h2 className="text-xl font-bold text-foreground">PostgreSQL Connection Error</h2>
+          <p className="text-sm text-rose-700 dark:text-rose-300 bg-rose-500/10 p-3 rounded-xl border border-rose-500/30 font-mono text-left overflow-auto">
             {dbError}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Browser local storage fallback has been removed. The application requires an active PostgreSQL database connection to operate.
           </p>
           <Button

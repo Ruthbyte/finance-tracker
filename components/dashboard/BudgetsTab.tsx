@@ -74,8 +74,8 @@ export function BudgetsTab() {
 
       {/* Active Threshold Alert Banners */}
       {alerts80.length > 0 && (
-        <div className="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2.5">
-          <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2.5">
+          <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <div>
             <span className="font-bold">80%+ Budget Threshold Alert:</span>{" "}
             Category spending has reached or exceeded 80% limit for{" "}
@@ -85,8 +85,8 @@ export function BudgetsTab() {
       )}
 
       {alerts50.length > 0 && (
-        <div className="p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2.5">
-          <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2.5">
+          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
           <div>
             <span className="font-bold">50% Budget Utilization Notice:</span>{" "}
             Category spending reached 50% threshold for{" "}
@@ -123,8 +123,8 @@ export function BudgetsTab() {
             <div
               className={`text-2xl font-extrabold ${
                 totalSpent > totalBudgeted
-                  ? "text-rose-400"
-                  : "text-emerald-400"
+                  ? "text-rose-600 dark:text-rose-400"
+                  : "text-emerald-600 dark:text-emerald-400"
               }`}
             >
               {formatCurrency(totalSpent)}
@@ -142,7 +142,7 @@ export function BudgetsTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-teal-400">
+            <div className="text-2xl font-extrabold text-teal-600 dark:text-teal-400">
               {budgets.length} Active Budgets
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -243,12 +243,12 @@ export function BudgetsTab() {
                     <span
                       className={`text-sm font-bold ${
                         isOver
-                          ? "text-rose-400"
+                          ? "text-rose-600 dark:text-rose-400"
                           : percent >= 80
-                            ? "text-rose-400"
+                            ? "text-rose-600 dark:text-rose-400"
                             : percent >= 50
-                              ? "text-amber-400"
-                              : "text-emerald-400"
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-emerald-600 dark:text-emerald-400"
                       }`}
                     >
                       {percent}%
@@ -270,22 +270,22 @@ export function BudgetsTab() {
 
                   <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
                     {isOver ? (
-                      <span className="text-rose-400 flex items-center gap-1 font-semibold">
+                      <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold">
                         <AlertCircle className="h-3.5 w-3.5" /> Exceeded by{" "}
                         {formatCurrency(Math.abs(remaining))}
                       </span>
                     ) : percent >= 80 ? (
-                      <span className="text-rose-400 flex items-center gap-1 font-semibold">
+                      <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1 font-semibold">
                         <AlertCircle className="h-3.5 w-3.5" /> 80% Threshold
                         Reached ({formatCurrency(remaining)} left)
                       </span>
                     ) : percent >= 50 ? (
-                      <span className="text-amber-400 flex items-center gap-1 font-semibold">
+                      <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1 font-semibold">
                         <AlertTriangle className="h-3.5 w-3.5" /> 50% Threshold
                         Reached ({formatCurrency(remaining)} left)
                       </span>
                     ) : (
-                      <span className="text-emerald-400 flex items-center gap-1 font-semibold">
+                      <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold">
                         <CheckCircle2 className="h-3.5 w-3.5" />{" "}
                         {formatCurrency(remaining)} left to spend
                       </span>

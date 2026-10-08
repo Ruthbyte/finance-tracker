@@ -68,7 +68,7 @@ export function GoalsTab() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold text-emerald-400">
+            <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
               {formatCurrency(totalSaved)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -107,7 +107,7 @@ export function GoalsTab() {
       {/* Savings Goals Grid */}
       {goals.length === 0 ? (
         <Card className="glass-card p-12 text-center flex flex-col items-center justify-center space-y-4">
-          <div className="h-14 w-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 text-cyan-400">
+          <div className="h-14 w-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 text-cyan-600 dark:text-cyan-400">
             <Target className="h-7 w-7" />
           </div>
           <div>
@@ -135,7 +135,7 @@ export function GoalsTab() {
                   <CardHeader className="flex flex-row items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div
-                        className="h-10 w-10 rounded-xl flex items-center justify-center border border-slate-700/60"
+                        className="h-10 w-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-zinc-700/60"
                         style={{
                           backgroundColor: `${g.color}15`,
                           color: g.color,
@@ -168,7 +168,7 @@ export function GoalsTab() {
                           / {formatCurrency(g.targetAmount)}
                         </span>
                       </div>
-                      <span className="text-sm font-bold text-emerald-500 dark:text-emerald-400">
+                      <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
                         {percent}%
                       </span>
                     </div>
@@ -179,7 +179,7 @@ export function GoalsTab() {
                     />
 
                     {isComplete ? (
-                      <div className="flex items-center gap-1.5 text-xs text-emerald-500 dark:text-emerald-400 font-semibold bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                      <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
                         <CheckCircle className="h-4 w-4" /> Goal Completed!
                       </div>
                     ) : (
@@ -202,7 +202,7 @@ export function GoalsTab() {
                           className="h-9 px-3 shrink-0"
                           onClick={() => handleQuickDeposit(g.id)}
                         >
-                          <Sparkles className="h-3.5 w-3.5 text-emerald-400" />{" "}
+                          <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />{" "}
                           Save
                         </Button>
                       </div>

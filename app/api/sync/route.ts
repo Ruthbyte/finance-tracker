@@ -1,25 +1,16 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
+import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
-import {
-  INITIAL_ACCOUNTS,
-  INITIAL_CATEGORIES,
-} from "@/lib/mock-data";
 
 export async function GET() {
   try {
-    const clerkUser = await currentUser();
-    if (!clerkUser) {
+    const session = await getSession();
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const primaryEmail =
-      clerkUser.emailAddresses.find(
-        (e) => e.id === clerkUser.primaryEmailAddressId
-      )?.emailAddress || clerkUser.emailAddresses[0]?.emailAddress || "";
-
-    let dbUser = await db.user.findUnique({
-      where: { clerkUserId: clerkUser.id },
+    const dbUser = await db.user.findUnique({
+      where: { id: session.userId },
       include: {
         accounts: true,
         categories: true,
@@ -40,101 +31,8 @@ export async function GET() {
       },
     });
 
-    // If not found by clerkUserId, check if a user record exists with the same primary email
-    if (!dbUser && primaryEmail) {
-      const existingUserByEmail = await db.user.findUnique({
-        where: { email: primaryEmail },
-      });
-
-      if (existingUserByEmail) {
-        dbUser = await db.user.update({
-          where: { id: existingUserByEmail.id },
-          data: {
-            clerkUserId: clerkUser.id,
-            name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || existingUserByEmail.name,
-            imageUrl: clerkUser.imageUrl || existingUserByEmail.imageUrl,
-          },
-          include: {
-            accounts: true,
-            categories: true,
-            transactions: {
-              include: {
-                account: true,
-                toAccount: true,
-                category: true,
-              },
-              orderBy: { date: "desc" },
-            },
-            budgets: {
-              include: {
-                category: true,
-              },
-            },
-            goals: true,
-          },
-        });
-      }
-    }
-
-    // If user does not exist in DB yet, seed initial data for them
     if (!dbUser) {
-      dbUser = await db.user.create({
-        data: {
-          clerkUserId: clerkUser.id,
-          email: primaryEmail,
-          name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || "User",
-          imageUrl: clerkUser.imageUrl,
-          accounts: {
-            create: [
-              {
-                name: "Main Checking",
-                type: "CHECKING",
-                balance: 0.0,
-                currency: "NGN",
-                accountNumber: "*4921",
-                color: "#10b981",
-                isDefault: true,
-              },
-              {
-                name: "High-Yield Savings",
-                type: "SAVINGS",
-                balance: 0.0,
-                currency: "NGN",
-                accountNumber: "*8832",
-                color: "#6366f1",
-              },
-            ],
-          },
-          categories: {
-            create: [
-              { name: "Salary", type: "INCOME", icon: "briefcase", color: "#10b981" },
-              { name: "Freelance", type: "INCOME", icon: "laptop", color: "#14b8a6" },
-              { name: "Groceries", type: "EXPENSE", icon: "shopping-cart", color: "#f59e0b" },
-              { name: "Dining & Drinks", type: "EXPENSE", icon: "utensils", color: "#ef4444" },
-              { name: "Utilities & Bills", type: "EXPENSE", icon: "zap", color: "#8b5cf6" },
-              { name: "Transport", type: "EXPENSE", icon: "car", color: "#06b6d4" },
-            ],
-          },
-        },
-        include: {
-          accounts: true,
-          categories: true,
-          transactions: {
-            include: {
-              account: true,
-              toAccount: true,
-              category: true,
-            },
-            orderBy: { date: "desc" },
-          },
-          budgets: {
-            include: {
-              category: true,
-            },
-          },
-          goals: true,
-        },
-      });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Format output
@@ -164,8 +62,12 @@ export async function GET() {
       toAccountId: tx.toAccountId || undefined,
       toAccountName: tx.toAccount?.name || undefined,
       categoryId: tx.categoryId || undefined,
-      categoryName: tx.type === "TRANSFER" ? "Transfer" : tx.category?.name || "Uncategorized",
-      categoryIcon: tx.type === "TRANSFER" ? "refresh-cw" : tx.category?.icon || "tag",
+      categoryName:
+        tx.type === "TRANSFER"
+          ? "Transfer"
+          : tx.category?.name || "Uncategorized",
+      categoryIcon:
+        tx.type === "TRANSFER" ? "refresh-cw" : tx.category?.icon || "tag",
       amount: tx.amount,
       type: tx.type as any,
       description: tx.description,

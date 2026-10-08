@@ -279,17 +279,17 @@ export function AddTransactionModal({
 
             {/* Validation Error Displays */}
             {isInvalidAmount && (
-              <div className="p-2.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-semibold animate-in fade-in">
+              <div className="p-2.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold animate-in fade-in">
                 Transfer amount must be a positive number greater than ₦0.00.
               </div>
             )}
             {isInsufficient && (
-              <div className="p-2.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-semibold animate-in fade-in">
+              <div className="p-2.5 rounded-lg bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold animate-in fade-in">
                 Insufficient funds! You only have ₦{selectedFromAccount?.balance.toLocaleString()} available in {selectedFromAccount?.name}.
               </div>
             )}
             {isSameAccount && (
-              <div className="p-2.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-semibold animate-in fade-in">
+              <div className="p-2.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-semibold animate-in fade-in">
                 Source and destination accounts must be different.
               </div>
             )}
